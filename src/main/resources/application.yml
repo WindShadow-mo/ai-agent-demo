@@ -2,7 +2,7 @@ logging:
   level:
     org.springframework.ai.openai: debug
     com.openai: debug
-    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: debug
+#    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: debug
     root: info
 
 spring:

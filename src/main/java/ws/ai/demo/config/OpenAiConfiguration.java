@@ -1,6 +1,5 @@
 package ws.ai.demo.config;
 
-import com.openai.models.beta.threads.messages.MessageContent;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
@@ -8,7 +7,6 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ws.ai.demo.annotation.OpenAiChat;
@@ -27,10 +25,6 @@ public class OpenAiConfiguration {
     public static ChatClient openAiChatClient(OpenAiChatModel chatModel, ChatMemory chatMemory) {
 
         return ChatClient.builder(chatModel)
-
-                // 系统提示词
-                .defaultSystem("你是一个温柔的秘书、助手，名叫云韵。回答问题必须使用中文")
-
                 // advisor增强是调用大模型前后做一下增强，类似AOP，是核心扩展之一
                 .defaultAdvisors(
                         new SimpleLoggerAdvisor(),  // advisor 增强，日志增强
