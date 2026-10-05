@@ -1,0 +1,79 @@
+package ws.ai.demo;
+
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+/**
+ * @author WindShadow
+ * @version 2026-10-04
+ */
+@Slf4j
+@SpringBootTest
+public class ChatShowcase {
+
+    @Autowired
+    private ChatClient chatClient;
+
+    // ~ 普通会话调用
+    // ==================================
+
+    @Test
+    void chatSyncTest() {
+
+        /** 提示词，核心为{@linkplain Message message}，
+         * message分为4大类型{@link org.springframework.ai.chat.messages.MessageType}：
+         * 系统提示词：SystemMessage、用户提示词：UserMessage，工具响应提示词：ToolResponseMessage、大模型回答：AssistantMessage
+         *
+         */
+
+        String content = chatClient.prompt()
+                // 用户提示词
+                .user("你是谁？")
+                .call()
+                .content();
+        log.info("content:{}", content);
+    }
+
+    @Test
+    void chatAsyncTest() {
+
+        chatClient.prompt()
+                .user("你是谁？")
+                .stream()
+                .content()
+                .doOnNext(System.out::print)
+                .blockLast();
+    }
+
+    // ~ 会话记忆 核心：ChatMemory
+    // ==================================
+
+    @Test
+    void chatMemoryTest() {
+
+        // 会话记忆，结合ChatMemory + 会话ID，通过advisor增强，给大模型发送提示词时，自动把历史提示词和回答都带上了
+        final String chatId = "" + System.currentTimeMillis();
+        String content1 = chatClient.prompt()
+                .system("回答必须简洁，不需要太发散")
+                .user("12个苹果平均分给3个人，每个人能分到几个？")
+                // 在增强上下文中，指定会话ID
+                .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, chatId))
+                .call()
+                .content();
+        log.info("content1:{}", content1);
+
+        String content2 = chatClient.prompt()
+                .user("如果分给4个人呢？")
+                // 在增强上下文中，指定会话ID
+                .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, chatId))
+                .call()
+                .content();
+
+        log.info("content2:{}", content2);
+    }
+}

@@ -1,0 +1,17 @@
+logging:
+  level:
+    org.springframework.ai.openai: debug
+    com.openai: debug
+    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: debug
+    root: info
+
+spring:
+  ai:
+    model:
+      chat: openai
+    openai:
+      base-url: http://127.0.0.1:8001/v1
+      api-key: sk-lm-29jxIiYh:4r3KV4gLzZLwM7XcssBj
+      chat:
+        model: claude-opus-4.6
+        temperature: 0.7
