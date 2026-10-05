@@ -3,6 +3,8 @@ package ws.ai.demo.chat;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.api.BaseChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -17,11 +19,17 @@ import java.util.List;
  */
 
 @Service
-@RequiredArgsConstructor
 public class DefaultChatService implements ChatService {
 
     private final ChatClient chatClient;
+    private final BaseChatMemoryAdvisor chatMemoryAdvisor;
     private final ChatConversationRepository repository;
+
+    public DefaultChatService(ChatClient.Builder builder, BaseChatMemoryAdvisor chatMemoryAdvisor, ChatConversationRepository repository) {
+        this.chatClient = builder.build();
+        this.chatMemoryAdvisor = chatMemoryAdvisor;
+        this.repository = repository;
+    }
 
     @Override
     public ChatClient.ChatClientRequestSpec open() {
@@ -32,7 +40,6 @@ public class DefaultChatService implements ChatService {
     public ChatClient.ChatClientRequestSpec open(String conversationId) {
 
         Assert.hasText(conversationId, "conversationId must not be empty");
-        repository.saveConversation(ConversationType.CHAT, conversationId);
         return doOpen(conversationId);
     }
 
@@ -50,7 +57,10 @@ public class DefaultChatService implements ChatService {
 
         ChatClient.ChatClientRequestSpec spec = chatClient.prompt();
         if (conversationId != null) {
-            spec = spec.advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, conversationId));
+            // 增加会话ID设置增强，增加会话记忆增强
+            spec = spec.advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, conversationId))
+                    .advisors(chatMemoryAdvisor);
+            repository.saveConversation(ConversationType.CHAT, conversationId);
         }
         return spec;
     }
