@@ -32,6 +32,9 @@ public class ChatConfiguration {
     public static ChatClientBuilderCustomizer customizer() {
 
         // advisor增强是调用大模型前后做一下增强，类似AOP，是核心扩展之一
-        return builder -> builder.defaultAdvisors(new SimpleLoggerAdvisor());  // advisor 增强，日志增强
+        return builder -> builder
+                .defaultSystem("必须使用中文回答")
+                .defaultSystem("无法回答时，直接结束且说明无法回答的原因")
+                .defaultAdvisors(new SimpleLoggerAdvisor());  // advisor 增强，日志增强
     }
 }
