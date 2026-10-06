@@ -1,9 +1,7 @@
 package ws.ai.demo;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.api.BaseChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.Message;
@@ -20,26 +18,16 @@ import ws.ai.demo.pojo.vo.ConversationView;
  */
 @Slf4j
 @SpringBootTest
-public class ChatShowcase {
+public class ChatShowcase extends BaseLLMShowcase {
 
     @Autowired
     private ConversationIdGen conversationIdGen;
-
-    @Autowired
-    private ChatClient.Builder builder;
 
     @Autowired
     private BaseChatMemoryAdvisor chatMemoryAdvisor;
 
     @Autowired
     private ChatService chatService;
-
-    private ChatClient chatClient;
-
-    @BeforeEach
-    void init(){
-        chatClient = builder.build();
-    }
 
     // ~ 普通会话调用
     // ==================================
