@@ -1,10 +1,7 @@
 package ws.ai.demo.config;
 
 import org.springframework.ai.chat.client.ChatClientBuilderCustomizer;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
-import org.springframework.ai.chat.client.advisor.api.BaseChatMemoryAdvisor;
-import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.model.chat.client.autoconfigure.ChatClientAutoConfiguration;
 import org.springframework.ai.model.chat.client.autoconfigure.ChatClientBuilderConfigurer;
