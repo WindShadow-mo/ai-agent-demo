@@ -2,6 +2,8 @@ package ws.ai.demo;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.StructuredOutputValidationAdvisor;
 import org.springframework.ai.chat.client.advisor.api.BaseChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.Message;
@@ -11,6 +13,7 @@ import ws.ai.demo.chat.ChatService;
 import ws.ai.demo.chat.ConversationIdGen;
 import ws.ai.demo.common.AppPromptCosntants;
 import ws.ai.demo.pojo.vo.ConversationView;
+import ws.ai.demo.pojo.vo.Person;
 
 /**
  * @author WindShadow
@@ -48,7 +51,7 @@ public class ChatShowcase extends BaseLLMShowcase {
                 .user("你是谁？")
                 .call()
                 .content();
-        log.info("content:{}", content);
+        System.out.println(content);
     }
 
     @Test
@@ -61,6 +64,22 @@ public class ChatShowcase extends BaseLLMShowcase {
                 .content()
                 .doOnNext(System.out::print)
                 .blockLast();
+    }
+
+    /**
+     * entity方法，调用会要求模型生成符合模式的 JSON，但无法强制执行。文本非json格式时，解析器会抛出异常。
+     * {@link StructuredOutputValidationAdvisor}提供了结构化输出的增强，使用ChatClient.EntityParamSpec::validateSchema导入该增强
+     */
+    @Test
+    void structOutputShow() {
+
+        Person person = chatClient.prompt()
+//                .system("个人信息应该至少包括姓名，年龄，邮箱地址") // 不加系统提示词也够
+                .user("有个人叫张三，是个高中生，猜一下他的个人信息")
+                .call()
+                // 通过指定验证json schema，开启自我纠正重试循环，如不开启则依赖大模型的输出，非标则报错
+                .entity(Person.class, ChatClient.EntityParamSpec::validateSchema);
+        System.out.println(person);
     }
 
     // ~ 会话记忆 核心：ChatMemory
