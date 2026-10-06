@@ -1,7 +1,6 @@
 package ws.ai.demo;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.document.DocumentReader;
@@ -16,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,17 +31,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class VectorStoreShowcase {
 
     private static final String FILENAME = "跨领域学习资料.md";
-    private static Resource MD_RESOURCE;
 
     private final Set<String> docIds = ConcurrentHashMap.newKeySet();
 
     @Autowired
     private VectorStore vectorStore;
-
-    @BeforeAll
-    static void loadMd() {
-        MD_RESOURCE = new ClassPathResource(FILENAME);
-    }
 
     @AfterEach
     void clean() {
@@ -58,14 +52,7 @@ public class VectorStoreShowcase {
     void eltShow() {
 
         // 读取markdown文档(使用专门的读取器)，并分段
-        MarkdownDocumentReaderConfig config = MarkdownDocumentReaderConfig.builder()
-                .withHorizontalRuleCreateDocument(true)
-                .withIncludeCodeBlock(false)
-                .withIncludeBlockquote(false)
-                .withAdditionalMetadata("filename", FILENAME)
-                .build();
-        DocumentReader reader = new MarkdownDocumentReader(MD_RESOURCE, config);
-        List<Document> documents = reader.read();
+        List<Document> documents = loadMarkdownDocument(FILENAME, new ClassPathResource(FILENAME));
         // 讲分段之后的文档，加入向量库
         addDocuments(documents);
 
@@ -92,6 +79,21 @@ public class VectorStoreShowcase {
                 .similarityThreshold(0.5)
                 .filterExpression("filename == '%s'".formatted("test-" + FILENAME))
                 .build()));
+    }
+
+    static List<Document> loadMarkdownDocument(String filename, Resource resource) {
+
+        Objects.requireNonNull(filename);
+        Objects.requireNonNull(resource);
+        // 读取markdown文档(使用专门的读取器)，并分段
+        MarkdownDocumentReaderConfig config = MarkdownDocumentReaderConfig.builder()
+                .withHorizontalRuleCreateDocument(true)
+                .withIncludeCodeBlock(false)
+                .withIncludeBlockquote(false)
+                .withAdditionalMetadata("filename", filename)
+                .build();
+        DocumentReader reader = new MarkdownDocumentReader(resource, config);
+        return reader.read();
     }
 
     private static void visitSearchResult(List<Document> results) {
