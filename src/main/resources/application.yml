@@ -3,6 +3,7 @@ logging:
     org.springframework.ai.openai: debug
     com.openai: debug
 #    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: debug
+    org.springframework.ai.vectorstore.SimpleVectorStore: warn
     root: info
 
 spring:
@@ -19,3 +20,8 @@ spring:
         model: text-embedding-embeddinggemma-300m-qat
         # 向量维度
         dimensions: 1024
+    vectorstore:
+      chroma:
+        client:
+          host: http://192.168.100.100
+          port: 8000
