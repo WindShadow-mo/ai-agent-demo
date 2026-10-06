@@ -112,6 +112,33 @@ public class ChatShowcase extends BaseLLMShowcase {
     }
 
     @Test
+    void chatSessionMemoryShow() {
+
+        // 会话记忆，结合ChatMemory + 会话ID，通过advisor增强，给大模型发送提示词时，自动把历史提示词和回答都带上了
+        final String chatId = conversationIdGen.nextConversationId();
+        String content1 = chatClient.prompt()
+                .system("回答必须简洁，不需要太发散")
+                .user("12个苹果平均分给3个人，每个人能分到几个？")
+                // 在增强上下文中，指定会话ID
+                .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, chatId))
+                .advisors(chatMemoryAdvisor)
+                .call()
+                .content();
+        System.out.println(content1);
+
+        String content2 = chatClient.prompt()
+                .user("如果分给4个人呢？")
+                // 在增强上下文中，指定会话ID
+                .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, chatId))
+                .advisors(chatMemoryAdvisor)
+                .call()
+                .content();
+
+        System.out.println(content2);
+    }
+
+
+    @Test
     void chatHistoryShow() {
 
         // 结合其它持久化机制，通过维护会话id，可实现历史会话记录等功能
