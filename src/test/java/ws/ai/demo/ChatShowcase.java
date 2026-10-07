@@ -6,7 +6,10 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.StructuredOutputValidationAdvisor;
 import org.springframework.ai.chat.client.advisor.api.BaseChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ws.ai.demo.chat.ChatService;
@@ -14,6 +17,8 @@ import ws.ai.demo.chat.ConversationIdGen;
 import ws.ai.demo.common.AppPromptCosntants;
 import ws.ai.demo.pojo.vo.ConversationView;
 import ws.ai.demo.pojo.vo.Person;
+
+import java.util.Optional;
 
 /**
  * @author WindShadow
@@ -64,6 +69,34 @@ public class ChatShowcase extends BaseLLMShowcase {
                 .content()
                 .doOnNext(System.out::print)
                 .blockLast();
+    }
+
+    @Test
+    void chatWithReasoningShow() {
+
+        final String metaKey = "reasoningContent";
+        ChatResponse chatResponse = chatClient.prompt()
+                .system(AppPromptCosntants.YUN_YUN)
+                .user("你是谁？")
+                .call()
+                .chatResponse();
+        // 获取推理内容
+        Optional.ofNullable(chatResponse)
+                .map(ChatResponse::getResult)
+                .map(Generation::getOutput)
+                .map(AssistantMessage::getMetadata)
+                .map(metadata -> metadata.get(metaKey))
+                .map(str -> "思考内容：\n" + str)
+                .ifPresent(System.out::println);
+
+        // 获取回答内容
+        Optional.ofNullable(chatResponse)
+                .map(ChatResponse::getResult)
+                .map(Generation::getOutput)
+                .map(AssistantMessage::getText)
+                .map(str -> "回答内容：\n" + str)
+                .ifPresent(System.out::println);
+
     }
 
     /**
