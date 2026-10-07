@@ -22,7 +22,10 @@ public class WebAccessLoggerFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String uri = request.getRequestURI();
-        log.info("uri:{}", uri);
+        String requestContentType = request.getContentType();
         filterChain.doFilter(request, response);
+        int status = response.getStatus();
+        String responseContentType = response.getContentType();
+        log.info("uri:{} status:[{}] ContentType:[{}] => [{}]", uri, status, requestContentType, responseContentType);
     }
 }

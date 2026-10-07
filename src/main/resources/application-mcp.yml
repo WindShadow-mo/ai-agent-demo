@@ -1,0 +1,9 @@
+spring:
+  ai:
+    mcp:
+      client:
+        name: ws-mcp-client
+        type: async
+        streamable-http:
+          connections:
+            ws: {url: "http://127.0.0.1:8081", endpoint: "/ws-mcp"}

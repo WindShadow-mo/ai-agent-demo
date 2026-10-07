@@ -15,6 +15,7 @@
     <properties>
         <ws-springx-common.version>${project.version}</ws-springx-common.version>
         <spring-ai.version>2.0.0</spring-ai.version>
+        <spring-ai-agent-utils-bom.version>0.10.0</spring-ai-agent-utils-bom.version>
         <!-- mockito版本与SpringBoot管理的版本一致 -->
         <mockito.version>5.20.0</mockito.version>
     </properties>
@@ -47,6 +48,21 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-client-webflux</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springaicommunity</groupId>
+            <artifactId>spring-ai-agent-utils</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
@@ -63,6 +79,13 @@
                 <groupId>org.springframework.ai</groupId>
                 <artifactId>spring-ai-bom</artifactId>
                 <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springaicommunity</groupId>
+                <artifactId>spring-ai-agent-utils-bom</artifactId>
+                <version>${spring-ai-agent-utils-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
